@@ -8,25 +8,14 @@ export function getWrittenNumber(input) {
     let stringToDisplay;
 
     if(isIncorrectNumberInput(input)) {
-        stringToDisplay = "Your input was not a simple, positive integer. Please write an integer into the input field if you want a correct result.";
+        stringToDisplay = "Your input was not a simple number. Please write one into the input field if you want a correct result.";
     } else {
         try {
-            if(numberIsTeenHundreds(input)) {
-                stringToDisplay = handleTeenHundredNumber(input);
+            if(inputIsInteger(input)) {
+                stringToDisplay = writeInteger(input);
             } else {
-                let result = "";
-                let numberInBlocks = getNumberInBlocks(input);
-
-                let numberTokens = [];
-                numberInBlocks.forEach((numberBlock, index) => {
-                    numberTokens.push(writeUpToThreeDigitNumber(numberBlock, index === numberInBlocks.length-1));
-                });
-
-                for (let i = 0; i < numberTokens.length; i++) {
-                    result += numberTokens[i] + " " + getNameForBlock(numberTokens.length - 1 - i) + " ";
-                }
-
-                stringToDisplay = result.trim();
+                let [integerPart, fractionalPart] = input.split(".");
+                stringToDisplay = [writeInteger(integerPart, true), writeFractional(fractionalPart)].join(" and ");
             }
         } catch (e) {
             stringToDisplay = e.message;
@@ -42,8 +31,6 @@ function isIncorrectNumberInput(input) {
     if(input === undefined || input === null) return true;
     // Input was not a number
     incorrectNumberInput |= Number.isNaN(Number.parseFloat(input));
-    // Input was not an integer
-    incorrectNumberInput |= !Number.isInteger(Number.parseFloat(input));
     // Input was in exponential form, e.g.: 1.2345E4
     incorrectNumberInput |= input.indexOf("e") !== -1;
     incorrectNumberInput |= input.indexOf("E") !== -1;
@@ -51,6 +38,36 @@ function isIncorrectNumberInput(input) {
     incorrectNumberInput |= input.indexOf("-") !== -1;
 
     return incorrectNumberInput;
+}
+
+function inputIsInteger(input) {
+    return Number.parseInt(input) === Number.parseFloat(input);
+}
+
+function writeInteger(input, forceNoAnds = false) {
+    let writtenInteger;
+    if (numberIsTeenHundreds(input)) {
+        writtenInteger = handleTeenHundredNumber(input);
+    } else {
+        let result = "";
+        let numberInBlocks = getNumberInBlocks(input);
+
+        let numberTokens = [];
+        numberInBlocks.forEach((numberBlock, index) => {
+            numberTokens.push(writeUpToThreeDigitNumber(numberBlock, index === numberInBlocks.length - 1, forceNoAnds));
+        });
+
+        for (let i = 0; i < numberTokens.length; i++) {
+            result += numberTokens[i] + " " + getNameForBlock(numberTokens.length - 1 - i) + " ";
+        }
+
+        writtenInteger = result.trim();
+    }
+    return writtenInteger;
+}
+
+function writeFractional(fractionalPart) {
+
 }
 
 /**
@@ -77,20 +94,22 @@ export function getNumberInBlocks(numberString) {
 /**
  * Generates the written English form of a number that is up to 3 digits long (i.e.: one block of a number)
  * @param {String} upToThreeDigitNumberString The numerical string that represents up to three digits of a number, e.g.: "123"
- * @param {Boolean} isLastBlock               Flag parameter that helps the function decide if it needs to put an "and"
+ * @param {boolean} isLastBlock               Flag parameter that helps the function decide if it needs to put an "and"
  *                                            between the hundreds and the tens/ones(in the last block, it is always
  *                                            required if there's any non-0 number in the tens/ones place,
  *                                            e.g.: "1,002,003" -> "one million two thousand and three": notice there's no "and" before the "two").
+ * @param {boolean}  forceNoAnds              Additional flag parameter that can override default "and" insertion logic
+ *                                            in cases where "and" is reserved as the marker for the decimal point
  * @return {String}                           The written English form of the number, e.g.: "one hundred and twenty-three"
  * */
-export function writeUpToThreeDigitNumber(upToThreeDigitNumberString, isLastBlock) {
+export function writeUpToThreeDigitNumber(upToThreeDigitNumberString, isLastBlock, forceNoAnds = false) {
     let {hundredsDigit, tensDigit, onesDigit} = getDigits(upToThreeDigitNumberString);
     let {hundreds, tens, ones} = getHundredsTensAndOnes(hundredsDigit, tensDigit, onesDigit);
     let isTeens = tensDigit === "1";
 
     let allTokens = [];
     if(hundreds) allTokens.push(hundreds);
-    if(shouldPutAndKeyword(hundredsDigit, tensDigit, onesDigit, isLastBlock)) allTokens.push("and");
+    if(shouldPutAndKeyword(hundredsDigit, tensDigit, onesDigit, isLastBlock, forceNoAnds)) allTokens.push("and");
 
     if(shouldPutDashBetweenTensAndOnes(tensDigit, onesDigit)) { // joined tens and ones
         allTokens.push(tens + "-" + ones);
@@ -146,8 +165,8 @@ function getHundredsTensAndOnes(hundredsDigit, tensDigit, onesDigit) {
     return {hundreds, tens, ones};
 }
 
-function shouldPutAndKeyword(hundredsDigit, tensDigit, onesDigit, isLastBlock) {
-    return ((hundredsDigit !== "0" && hundredsDigit !== undefined) || (isLastBlock && hundredsDigit !== undefined)) && (tensDigit !== "0" || onesDigit !== "0");
+function shouldPutAndKeyword(hundredsDigit, tensDigit, onesDigit, isLastBlock, forceNoAnds = false) {
+    return !forceNoAnds && ((hundredsDigit !== "0" && hundredsDigit !== undefined) || (isLastBlock && hundredsDigit !== undefined)) && (tensDigit !== "0" || onesDigit !== "0");
 }
 
 function shouldPutDashBetweenTensAndOnes(tensDigit, onesDigit) {
