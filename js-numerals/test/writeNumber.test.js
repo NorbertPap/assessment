@@ -1,5 +1,5 @@
 import {getWrittenNumber} from "../src/writeNumber.js";
-import {getNumberInBlocks, NOT_A_NUMBER_ERROR_TEXT, writeUpToThreeDigitNumber} from "../src/writeNumber";
+import {getNumberBlocks, NOT_A_NUMBER_ERROR_TEXT, writeUpToThreeDigitNumber} from "../src/writeNumber";
 
 
 /*********************************************************************************/
@@ -55,19 +55,19 @@ test("Incorrect input: only decimal points", () => {
 //                    TESTS FOR NUMBER BLOCK PARTITIONING                        //
 /*********************************************************************************/
 test("Number block partitioning test: only one 3 member block", () => {
-    expect(getNumberInBlocks("100")).toStrictEqual(["100"]);
+    expect(getNumberBlocks("100")).toStrictEqual(["100"]);
 });
 
 test("Number block partitioning test: only 3 member blocks", () => {
-    expect(getNumberInBlocks("100000")).toStrictEqual(["100", "000"]);
+    expect(getNumberBlocks("100000")).toStrictEqual(["100", "000"]);
 });
 
 test("Number block partitioning test: first block has 2 members", () => {
-    expect(getNumberInBlocks("10000")).toStrictEqual(["10", "000"]);
+    expect(getNumberBlocks("10000")).toStrictEqual(["10", "000"]);
 });
 
 test("Number block partitioning test: first block has only one member", () => {
-    expect(getNumberInBlocks("1000")).toStrictEqual(["1", "000"]);
+    expect(getNumberBlocks("1000")).toStrictEqual(["1", "000"]);
 });
 
 
@@ -143,6 +143,9 @@ test("Complete number: big number with only one digit", () => {
     expect(getWrittenNumber("1000000000000")).toBe("one billion");
 });
 
+test("Complete number: big number with only one digit", () => {
+    expect(getWrittenNumber("100000000000000000")).toBe("one hundred thousand billion");
+});
 
 
 /*********************************************************************************/

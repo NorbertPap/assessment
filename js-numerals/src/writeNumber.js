@@ -102,23 +102,39 @@ function writeInteger(input, forceNoAnds = false) {
     if (numberIsTeenHundreds(input)) {
         writtenInteger += handleTeenHundredNumber(input);
     } else {
-        let result = "";
-        let numberInBlocks = getNumberInBlocks(input);
-
-        let numberTokens = [];
-        numberInBlocks.forEach((numberBlock, index) => {
-            numberTokens.push(writeUpToThreeDigitNumber(numberBlock, index === numberInBlocks.length - 1, forceNoAnds));
-        });
-
-        for (let i = 0; i < numberTokens.length; i++) {
-            if(parseInt(numberInBlocks[i]) !== 0) {
-                result += numberTokens[i] + " " + getNameForBlock(numberTokens.length - 1 - i) + " ";
-            }
-        }
-
-        writtenInteger += result.trim();
+        writtenInteger += writeBlocksAndTheirNames(input, forceNoAnds);
     }
     return writtenInteger;
+}
+
+function writeBlocksAndTheirNames(input, forceNoAnds) {
+    let result = "";
+    let numberBlocks = getNumberBlocks(input);
+    let writtenNumbers = getWrittenBlocks(numberBlocks, forceNoAnds);
+
+    let firstPowerOfMillionAdded = false; // we have to keep track of this to make sure that every number is named properly
+    for (let i = 0; i < writtenNumbers.length; i++) {
+        let numberBlock = numberBlocks[i];
+        let nameForBlock = getNameForBlock(writtenNumbers.length - 1 - i);
+        if (parseInt(numberBlock) !== 0) {
+            if (firstPowerOfMillionAdded === false && nameForBlock !== "thousand") {
+                firstPowerOfMillionAdded = true;
+            }
+            result += writtenNumbers[i] + " " + nameForBlock + " ";
+        } else if (firstPowerOfMillionAdded === false && nameForBlock !== "thousand") {
+            result += getNameForBlock(writtenNumbers.length - 1 - i);
+            firstPowerOfMillionAdded = true
+        }
+    }
+    return result.trim();
+}
+
+function getWrittenBlocks(numberInBlocks, forceNoAnds) {
+    let numberTokens = [];
+    numberInBlocks.forEach((numberBlock, index) => {
+        numberTokens.push(writeUpToThreeDigitNumber(numberBlock, index === numberInBlocks.length - 1, forceNoAnds));
+    });
+    return numberTokens;
 }
 
 /**
@@ -127,7 +143,7 @@ function writeInteger(input, forceNoAnds = false) {
  * @param {string} numberString A string representation of a number (could hold arbitrary data and would still work, but the rule is originally defined for numbers)
  * @return {string[]}           The array of up to 3 character long elements
  * */
-export function getNumberInBlocks(numberString) {
+export function getNumberBlocks(numberString) {
     let blocks = [];
 
     let incompleteFirstBlockLength = numberString.length % 3; // if the remainder is 0, the first block is not incomplete
