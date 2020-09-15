@@ -11,11 +11,15 @@ export function getWrittenNumber(input) {
         stringToDisplay = "Your input was not a simple number. Please write one into the input field if you want a correct result.";
     } else {
         try {
-            if(inputIsInteger(input)) {
-                stringToDisplay = writeInteger(input);
+            if(inputIsZero(input)) {
+                stringToDisplay = "zero";
             } else {
-                let [integerPart, fractionalPart] = input.split(".");
-                stringToDisplay = joinIntegerAndFractionalParts(writeInteger(integerPart, Number.parseInt(fractionalPart) !== 0), writeFractional(fractionalPart));
+                if(inputIsInteger(input)) {
+                    stringToDisplay = writeInteger(input);
+                } else {
+                    let [integerPart, fractionalPart] = input.split(".");
+                    stringToDisplay = joinIntegerAndFractionalParts(writeInteger(integerPart, Number.parseInt(fractionalPart) !== 0), writeFractional(fractionalPart));
+                }
             }
         } catch (e) {
             stringToDisplay = e.message;
@@ -26,18 +30,61 @@ export function getWrittenNumber(input) {
 }
 
 function isIncorrectNumberInput(input) {
-    let incorrectNumberInput = false;
-    // Undefined and null check
-    if(input === undefined || input === null) return true;
-    // Input was not a number
-    incorrectNumberInput |= Number.isNaN(Number.parseFloat(input));
-    // Input has comma
-    incorrectNumberInput |= input.indexOf(",") !== -1;
-    // Input was in exponential form, e.g.: 1.2345E4
-    incorrectNumberInput |= input.indexOf("e") !== -1;
-    incorrectNumberInput |= input.indexOf("E") !== -1;
+    let isIncorrectNumberInput = false;
+    if(input === undefined || input === null) {
+        isIncorrectNumberInput = true;
+    } else if (input === "-" || input.indexOf("-") !== -1 && input.indexOf("-") !== 0 || input.split("-").length > 2) { // Incorrectly located, multiple or only minus signs
+        isIncorrectNumberInput = true;
+    } else if (input === "." || input.split(".").length > 2) { // Multiple decimal points, or only decimal point
+        isIncorrectNumberInput = true;
+    } else if (nonZeroLeadsWithZero(input)) {
+        isIncorrectNumberInput = true;
+    } else {
+        for (let i = 0; i < input.length; i++) {
+            if(isInvalidCharacter(input.charAt(i))) {
+                isIncorrectNumberInput = true;
+                break;
+            }
+        }
+    }
+    return isIncorrectNumberInput;
+}
 
-    return incorrectNumberInput;
+function nonZeroLeadsWithZero(input) {
+    let hasIncorrectLeadingZero = false;
+    input = (input.indexOf("-") === 0) ? input.substr(1) : input;
+    let firstZeroIndex = input.indexOf("0");
+    if(firstZeroIndex === 0) {
+        if(input.length !== 1 && firstZeroIndex === 0 && input.charAt(1) !== ".") {
+            hasIncorrectLeadingZero = true;
+        }
+    }
+    return hasIncorrectLeadingZero;
+}
+
+function isInvalidCharacter(char) {
+    return char !== "0" &&
+        char !== "1" &&
+        char !== "2" &&
+        char !== "3" &&
+        char !== "4" &&
+        char !== "5" &&
+        char !== "6" &&
+        char !== "7" &&
+        char !== "8" &&
+        char !== "9" &&
+        char !== "." &&
+        char !== "-";
+}
+
+function inputIsZero(input) {
+    let inputIsZero = true;
+    for (let i = 0; i < input.length; i++) {
+        if(input.charAt(i) !== "." && input.charAt(i) !== "-" && input.charAt(i) !== "0") {
+            inputIsZero = false;
+        }
+    }
+    return inputIsZero;
 }
 
 function inputIsInteger(input) {
@@ -274,7 +321,7 @@ function getNameForBlock(reverseIndexOfBlock) {
     return blockName;
 }
 
-function getNameOfLargeNumber(powerOfMillion) {
+function getNameOfLargeNumber(powerOfMillion, negativeExponent = false) {
     let powersOfMillion = [
         "",
         "million",
@@ -300,7 +347,11 @@ function getNameOfLargeNumber(powerOfMillion) {
     ];
 
     if(powerOfMillion > powersOfMillion.length-1) {
-        throw new Error("Number is larger than what is currently supported. Please enter a smaller number");
+        if(negativeExponent) {
+            throw new Error("Fractional part is smaller than what is currently supported. Please enter a number with smaller precision")
+        } else {
+            throw new Error("Number is larger than what is currently supported. Please enter a smaller number");
+        }
     }
 
     return powersOfMillion[powerOfMillion];
@@ -327,7 +378,7 @@ function trimLeadingZeroes(fractionalPart) {
 
 function getNameOfFractionalNumber(lengthOfFractionalPart, isPlural) {
     let lowerThanMillionPart = getLowerThanMillionPart(lengthOfFractionalPart % 6);
-    let higherThanMillionPart = getNameOfLargeNumber(Math.floor(lengthOfFractionalPart / 6));
+    let higherThanMillionPart = getNameOfLargeNumber(Math.floor(lengthOfFractionalPart / 6), true);
 
     let tokens = [];
     if(lowerThanMillionPart) tokens.push(lowerThanMillionPart);

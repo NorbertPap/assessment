@@ -21,6 +21,34 @@ test("Incorrect input: null", () => {
     expect(getWrittenNumber(null)).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
 });
 
+test("Incorrect input: multiple minus signs", () => {
+    expect(getWrittenNumber("-0-0")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+});
+
+test("Incorrect input: multiple decimal points", () => {
+    expect(getWrittenNumber("1.2.3")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+});
+
+test("Incorrect input: leading zero", () => {
+    expect(getWrittenNumber("00.0")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+});
+
+test("Incorrect input: only a minus sign", () => {
+    expect(getWrittenNumber("-")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+});
+
+test("Incorrect input: only minus signs", () => {
+    expect(getWrittenNumber("---")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+});
+
+test("Incorrect input: only a decimal point", () => {
+    expect(getWrittenNumber(".")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+});
+
+test("Incorrect input: only decimal points", () => {
+    expect(getWrittenNumber("...")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+});
+
 
 
 /*********************************************************************************/
@@ -234,6 +262,46 @@ test("Negative number: fractional only", () => {
 /*********************************************************************************/
 //                          TESTS FOR EDGE CASES                                 //
 /*********************************************************************************/
-test("Edge case: number is too big", () => {
+test("Edge case: integer number is too big", () => {
     expect(getWrittenNumber("1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")).toBe("Number is larger than what is currently supported. Please enter a smaller number");
+});
+
+test("Edge case: fractional number is too small", () => {
+    expect(getWrittenNumber("0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001")).toBe("Fractional part is smaller than what is currently supported. Please enter a number with smaller precision");
+});
+
+test("Edge case: minus zero", () => {
+    expect(getWrittenNumber("-0")).toBe("zero");
+});
+
+test("Edge case: minus zero point zero", () => {
+    expect(getWrittenNumber("-0.0")).toBe("zero");
+});
+
+test("Edge case: zero", () => {
+    expect(getWrittenNumber("0")).toBe("zero");
+});
+
+test("Edge case: zero point zero", () => {
+    expect(getWrittenNumber("0.0")).toBe("zero");
+});
+
+test("Edge case: zero point zero", () => {
+    expect(getWrittenNumber("0.00")).toBe("zero");
+});
+
+test("Edge case: no zero before decimal point", () => {
+    expect(getWrittenNumber(".1")).toBe("one tenth");
+});
+
+test("Edge case: negative number and no zero before decimal point", () => {
+    expect(getWrittenNumber("-.1")).toBe("minus one tenth");
+});
+
+test("Edge case: zero and no zero before decimal point", () => {
+    expect(getWrittenNumber(".0")).toBe("zero");
+});
+
+test("Edge case: minus zero and no zero before decimal point", () => {
+    expect(getWrittenNumber("-.0")).toBe("zero");
 });
