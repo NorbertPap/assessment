@@ -122,7 +122,7 @@ function writeBlocksAndTheirNames(input, forceNoAnds) {
             }
             result += writtenNumbers[i] + " " + nameForBlock + " ";
         } else if (firstPowerOfMillionAdded === false && nameForBlock !== "thousand") {
-            result += getNameForBlock(writtenNumbers.length - 1 - i);
+            result += getNameForBlock(writtenNumbers.length - 1 - i) + " ";
             firstPowerOfMillionAdded = true
         }
     }
