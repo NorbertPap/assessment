@@ -6,7 +6,9 @@ function main() {
     writeOutButton.addEventListener("click", () => {
         let numberInput = document.getElementById("numberInput");
         let resultDiv = document.getElementById("result");
+        resultDiv.readonly = false;
         resultDiv.innerText = getWrittenNumber(numberInput.value);
+        resultDiv.readonly = true;
     })
 }
 

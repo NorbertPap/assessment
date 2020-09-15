@@ -14,19 +14,16 @@
 </head>
 <body>
     <div class="container main">
-        <div class="row">
-            <label for="numberInput">Type in a number:</label><br>
-        </div>
-        <div class="row">
-            <input type="number" id="numberInput" maxlength="126"/><br>
-        </div>
-        <div class="row">
-            <input type="submit" value="Write out number!" id="writeOutButton"><br>
-        </div>
-        <div id="result" class="row">
 
+        <div class="labelPanel">
+            <label for="numberInput" id="numberInputLabel">Type in a number:</label><br>
         </div>
+        <div class="inputDisplayPanel">
+            <input class="form-control" type="number" id="numberInput" maxlength="126"/>
+            <input type="submit" value="Write out number!" class="btn" id="writeOutButton"> <br>
+            <textarea id="result" readonly></textarea>
+        </div>
+
     </div>
-
 </body>
 </html>
