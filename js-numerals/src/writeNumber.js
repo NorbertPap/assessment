@@ -15,7 +15,7 @@ export function getWrittenNumber(input) {
                 stringToDisplay = writeInteger(input);
             } else {
                 let [integerPart, fractionalPart] = input.split(".");
-                stringToDisplay = joinIntegerAndFractionalParts(writeInteger(integerPart, true), writeFractional(fractionalPart));
+                stringToDisplay = joinIntegerAndFractionalParts(writeInteger(integerPart, Number.parseInt(fractionalPart) !== 0), writeFractional(fractionalPart));
             }
         } catch (e) {
             stringToDisplay = e.message;
@@ -36,8 +36,6 @@ function isIncorrectNumberInput(input) {
     // Input was in exponential form, e.g.: 1.2345E4
     incorrectNumberInput |= input.indexOf("e") !== -1;
     incorrectNumberInput |= input.indexOf("E") !== -1;
-    // Input is negative
-    incorrectNumberInput |= input.indexOf("-") !== -1;
 
     return incorrectNumberInput;
 }
@@ -47,9 +45,13 @@ function inputIsInteger(input) {
 }
 
 function writeInteger(input, forceNoAnds = false) {
-    let writtenInteger;
+    let writtenInteger = "";
+    if(input.charAt(0) === "-") {
+        writtenInteger = "minus ";
+        input = input.substr(1);
+    }
     if (numberIsTeenHundreds(input)) {
-        writtenInteger = handleTeenHundredNumber(input);
+        writtenInteger += handleTeenHundredNumber(input);
     } else {
         let result = "";
         let numberInBlocks = getNumberInBlocks(input);
@@ -63,7 +65,7 @@ function writeInteger(input, forceNoAnds = false) {
             result += numberTokens[i] + " " + getNameForBlock(numberTokens.length - 1 - i) + " ";
         }
 
-        writtenInteger = result.trim();
+        writtenInteger += result.trim();
     }
     return writtenInteger;
 }
@@ -307,7 +309,9 @@ function getNameOfLargeNumber(powerOfMillion) {
 function writeFractional(fractionalPart) {
     let writtenNumber = writeInteger(trimLeadingZeroes(fractionalPart), true);
     let nameOfNumber = getNameOfFractionalNumber(fractionalPart.length, isFractionalPlural(fractionalPart));
-    return writtenNumber + " " + nameOfNumber;
+    return writtenNumber
+        ? writtenNumber + " " + nameOfNumber
+        : "";
 }
 
 function trimLeadingZeroes(fractionalPart) {
@@ -361,8 +365,17 @@ function isFractionalPlural(fractionalPart) {
 }
 
 function joinIntegerAndFractionalParts(writtenInteger, writtenFractional) {
-    return writtenInteger
-        ? writtenInteger + " and " + writtenFractional
-        : writtenFractional;
+    let result = "";
+    if(writtenInteger) {
+        result += writtenInteger
+    }
+    if(writtenInteger && writtenInteger !== "minus " && writtenFractional) {
+        result += " and ";
+    }
+    if(writtenFractional) {
+        result += writtenFractional;
+    }
+
+    return result;
 }
 

@@ -13,10 +13,6 @@ test("Incorrect input: exponential form", () => {
     expect(getWrittenNumber("1e2")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
 });
 
-test("Incorrect input: negative number", () => {
-    expect(getWrittenNumber("-1")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
-});
-
 test("Incorrect input: undefined", () => {
     expect(getWrittenNumber(undefined)).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
 });
@@ -206,6 +202,33 @@ test("Non-integer number: complex number", () => {
                                                                                   "four hundred fifty-six thousand seven hundred eighty-nine trillionths");
 });
 
+test("Non-integer number: zero fractional", () => {
+    expect(getWrittenNumber("1.0")).toBe("one");
+});
+
+test("Non-integer number: zero fractional, large integer", () => {
+    expect(getWrittenNumber("123456789.0")).toBe("one hundred and twenty-three million four hundred and fifty-six thousand seven hundred and eighty-nine");
+});
+
+
+/*********************************************************************************/
+//                    TESTS FOR NEGATIVE NUMBER WRITING                          //
+/*********************************************************************************/
+test("Negative number: simple case", () => {
+    expect(getWrittenNumber("-1")).toBe("minus one");
+});
+
+test("Negative number: big integer", () => {
+    expect(getWrittenNumber("-1234567")).toBe("minus one million two hundred and thirty-four thousand five hundred and sixty-seven");
+});
+
+test("Negative number: integer and fractional", () => {
+    expect(getWrittenNumber("-1.1")).toBe("minus one and one tenth");
+});
+
+test("Negative number: fractional only", () => {
+    expect(getWrittenNumber("-0.002")).toBe("minus two thousandths");
+});
 
 
 /*********************************************************************************/
