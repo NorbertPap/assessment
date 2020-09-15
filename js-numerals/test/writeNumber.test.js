@@ -6,27 +6,23 @@ import {getNumberInBlocks, writeUpToThreeDigitNumber} from "../src/writeNumber";
 //                         TESTS FOR INCORRECT INPUT                             //
 /*********************************************************************************/
 test("Incorrect input: not a number", () => {
-    expect(getWrittenNumber("abc")).toBe("Your input was not a simple, positive integer. Please write an integer into the input field if you want a correct result.");
-});
-
-test("Incorrect input: not an integer", () => {
-    expect(getWrittenNumber("1.2")).toBe("Your input was not a simple, positive integer. Please write an integer into the input field if you want a correct result.");
+    expect(getWrittenNumber("abc")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
 });
 
 test("Incorrect input: exponential form", () => {
-    expect(getWrittenNumber("1e2")).toBe("Your input was not a simple, positive integer. Please write an integer into the input field if you want a correct result.");
+    expect(getWrittenNumber("1e2")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
 });
 
 test("Incorrect input: negative number", () => {
-    expect(getWrittenNumber("-1")).toBe("Your input was not a simple, positive integer. Please write an integer into the input field if you want a correct result.");
+    expect(getWrittenNumber("-1")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
 });
 
 test("Incorrect input: undefined", () => {
-    expect(getWrittenNumber(undefined)).toBe("Your input was not a simple, positive integer. Please write an integer into the input field if you want a correct result.");
+    expect(getWrittenNumber(undefined)).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
 });
 
 test("Incorrect input: null", () => {
-    expect(getWrittenNumber(null)).toBe("Your input was not a simple, positive integer. Please write an integer into the input field if you want a correct result.");
+    expect(getWrittenNumber(null)).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
 });
 
 
@@ -147,8 +143,74 @@ test("Complete number: teen hundreds with teens", () => {
 
 
 /*********************************************************************************/
+//                    TESTS FOR NON-INTEGER WRITING                              //
+/*********************************************************************************/
+test("Non-integer number: simple case with tenths", () => {
+    expect(getWrittenNumber("1.2")).toBe("one and two tenths");
+});
+
+test("Non-integer number: simple case with hundredths", () => {
+    expect(getWrittenNumber("1.03")).toBe("one and three hundredths");
+});
+
+test("Non-integer number: simple case with thousandths", () => {
+    expect(getWrittenNumber("1.004")).toBe("one and four thousandths");
+});
+
+test("Non-integer number: simple case with ten thousandths", () => {
+    expect(getWrittenNumber("1.0005")).toBe("one and five ten thousandths");
+});
+
+test("Non-integer number: simple case with hundred thousandths", () => {
+    expect(getWrittenNumber("1.00006")).toBe("one and six hundred thousandths");
+});
+
+test("Non-integer number: simple case with millionth", () => {
+    expect(getWrittenNumber("1.000007")).toBe("one and seven millionths");
+});
+
+test("Non-integer number: simple case with ten millionth", () => {
+    expect(getWrittenNumber("1.0000008")).toBe("one and eight ten millionths");
+});
+
+test("Non-integer number: simple case with hundred millionth", () => {
+    expect(getWrittenNumber("1.00000009")).toBe("one and nine hundred millionths");
+});
+
+test("Non-integer number: simple case with thousand millionth", () => {
+    expect(getWrittenNumber("1.000000010")).toBe("one and ten thousand millionths");
+});
+
+test("Non-integer number: simple case with ten thousand millionth", () => {
+    expect(getWrittenNumber("1.0000000011")).toBe("one and eleven ten thousand millionths");
+});
+
+test("Non-integer number: simple case with hundred thousand millionth", () => {
+    expect(getWrittenNumber("1.00000000012")).toBe("one and twelve hundred thousand millionths");
+});
+
+test("Non-integer number: no integer part", () => {
+    expect(getWrittenNumber("0.2")).toBe("two tenths");
+});
+
+test("Non-integer number: singular fractional part", () => {
+    expect(getWrittenNumber("1.1")).toBe("one and one tenth");
+});
+
+test("Non-integer number: complex number", () => {
+    expect(getWrittenNumber("123456789123456789.123456789123456789")).toBe("one hundred twenty-three thousand four hundred fifty-six billion " +
+                                                                                  "seven hundred eighty-nine thousand one hundred twenty-three million " +
+                                                                                  "four hundred fifty-six thousand seven hundred eighty-nine and " +
+                                                                                  "one hundred twenty-three thousand four hundred fifty-six billion " +
+                                                                                  "seven hundred eighty-nine thousand one hundred twenty-three million " +
+                                                                                  "four hundred fifty-six thousand seven hundred eighty-nine trillionths");
+});
+
+
+
+/*********************************************************************************/
 //                          TESTS FOR EDGE CASES                                 //
 /*********************************************************************************/
-test("Complete number: number is too big", () => {
+test("Edge case: number is too big", () => {
     expect(getWrittenNumber("1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")).toBe("Number is larger than what is currently supported. Please enter a smaller number");
 });

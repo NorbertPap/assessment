@@ -15,7 +15,7 @@ export function getWrittenNumber(input) {
                 stringToDisplay = writeInteger(input);
             } else {
                 let [integerPart, fractionalPart] = input.split(".");
-                stringToDisplay = [writeInteger(integerPart, true), writeFractional(fractionalPart)].join(" and ");
+                stringToDisplay = joinIntegerAndFractionalParts(writeInteger(integerPart, true), writeFractional(fractionalPart));
             }
         } catch (e) {
             stringToDisplay = e.message;
@@ -31,6 +31,8 @@ function isIncorrectNumberInput(input) {
     if(input === undefined || input === null) return true;
     // Input was not a number
     incorrectNumberInput |= Number.isNaN(Number.parseFloat(input));
+    // Input has comma
+    incorrectNumberInput |= input.indexOf(",") !== -1;
     // Input was in exponential form, e.g.: 1.2345E4
     incorrectNumberInput |= input.indexOf("e") !== -1;
     incorrectNumberInput |= input.indexOf("E") !== -1;
@@ -41,7 +43,7 @@ function isIncorrectNumberInput(input) {
 }
 
 function inputIsInteger(input) {
-    return Number.parseInt(input) === Number.parseFloat(input);
+    return input.indexOf(".") === -1;
 }
 
 function writeInteger(input, forceNoAnds = false) {
@@ -64,10 +66,6 @@ function writeInteger(input, forceNoAnds = false) {
         writtenInteger = result.trim();
     }
     return writtenInteger;
-}
-
-function writeFractional(fractionalPart) {
-
 }
 
 /**
@@ -305,3 +303,66 @@ function getNameOfLargeNumber(powerOfMillion) {
 
     return powersOfMillion[powerOfMillion];
 }
+
+function writeFractional(fractionalPart) {
+    let writtenNumber = writeInteger(trimLeadingZeroes(fractionalPart), true);
+    let nameOfNumber = getNameOfFractionalNumber(fractionalPart.length, isFractionalPlural(fractionalPart));
+    return writtenNumber + " " + nameOfNumber;
+}
+
+function trimLeadingZeroes(fractionalPart) {
+    let trimmed = fractionalPart;
+    for (let i = 0; i < fractionalPart.length; i++) {
+        if(!(fractionalPart.charAt(i) === "0")) {
+            trimmed = fractionalPart.substr(i, fractionalPart.length - i);
+            break;
+        }
+    }
+    return trimmed;
+}
+
+function getNameOfFractionalNumber(lengthOfFractionalPart, isPlural) {
+    let lowerThanMillionPart = getLowerThanMillionPart(lengthOfFractionalPart % 6);
+    let higherThanMillionPart = getNameOfLargeNumber(Math.floor(lengthOfFractionalPart / 6));
+
+    let tokens = [];
+    if(lowerThanMillionPart) tokens.push(lowerThanMillionPart);
+    if(higherThanMillionPart) tokens.push(higherThanMillionPart);
+
+    return tokens.join(" ") + "th" + (isPlural ? "s" : "");
+}
+
+function getLowerThanMillionPart(length) {
+    switch (length) {
+        case 0:
+            return "";
+        case 1:
+            return "ten";
+        case 2:
+            return "hundred";
+        case 3:
+            return "thousand";
+        case 4:
+            return "ten thousand";
+        case 5:
+            return "hundred thousand";
+        default:
+            throw new Error("Unexpected input: " + length);
+    }
+}
+
+function isFractionalPlural(fractionalPart) {
+    for (let i = 0; i < fractionalPart.length; i++) {
+        if(!(fractionalPart.charAt(i) === "0" || fractionalPart.charAt(i) === "1" && i === fractionalPart.length - 1)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function joinIntegerAndFractionalParts(writtenInteger, writtenFractional) {
+    return writtenInteger
+        ? writtenInteger + " and " + writtenFractional
+        : writtenFractional;
+}
+
