@@ -1,0 +1,13 @@
+.main {
+    margin: auto;
+    width: 10%;
+    text-align: center;
+}
+
+#numberInput {
+    text-align: right;
+}
+
+.row {
+    margin: 1%;
+}

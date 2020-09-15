@@ -1,3 +1,5 @@
+export const NOT_A_NUMBER_ERROR_TEXT = "Your input was not a number. Please write one into the input field if you want a correct result.";
+
 /**
  * Converts any positive integer into it's written form in English
  * @param {string} input Accepts any type of input string, and decides if it's suitable for the task, i.e.: the input is a string representation of a number.
@@ -8,7 +10,7 @@ export function getWrittenNumber(input) {
     let stringToDisplay;
 
     if(isIncorrectNumberInput(input)) {
-        stringToDisplay = "Your input was not a simple number. Please write one into the input field if you want a correct result.";
+        stringToDisplay = NOT_A_NUMBER_ERROR_TEXT;
     } else {
         try {
             if(inputIsZero(input)) {
@@ -31,7 +33,7 @@ export function getWrittenNumber(input) {
 
 function isIncorrectNumberInput(input) {
     let isIncorrectNumberInput = false;
-    if(input === undefined || input === null) {
+    if(input === undefined || input === null || input === "") {
         isIncorrectNumberInput = true;
     } else if (input === "-" || input.indexOf("-") !== -1 && input.indexOf("-") !== 0 || input.split("-").length > 2) { // Incorrectly located, multiple or only minus signs
         isIncorrectNumberInput = true;
@@ -109,7 +111,9 @@ function writeInteger(input, forceNoAnds = false) {
         });
 
         for (let i = 0; i < numberTokens.length; i++) {
-            result += numberTokens[i] + " " + getNameForBlock(numberTokens.length - 1 - i) + " ";
+            if(parseInt(numberInBlocks[i]) !== 0) {
+                result += numberTokens[i] + " " + getNameForBlock(numberTokens.length - 1 - i) + " ";
+            }
         }
 
         writtenInteger += result.trim();

@@ -1,52 +1,52 @@
 import {getWrittenNumber} from "../src/writeNumber.js";
-import {getNumberInBlocks, writeUpToThreeDigitNumber} from "../src/writeNumber";
+import {getNumberInBlocks, NOT_A_NUMBER_ERROR_TEXT, writeUpToThreeDigitNumber} from "../src/writeNumber";
 
 
 /*********************************************************************************/
 //                         TESTS FOR INCORRECT INPUT                             //
 /*********************************************************************************/
 test("Incorrect input: not a number", () => {
-    expect(getWrittenNumber("abc")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+    expect(getWrittenNumber("abc")).toBe(NOT_A_NUMBER_ERROR_TEXT);
 });
 
 test("Incorrect input: exponential form", () => {
-    expect(getWrittenNumber("1e2")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+    expect(getWrittenNumber("1e2")).toBe(NOT_A_NUMBER_ERROR_TEXT);
 });
 
 test("Incorrect input: undefined", () => {
-    expect(getWrittenNumber(undefined)).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+    expect(getWrittenNumber(undefined)).toBe(NOT_A_NUMBER_ERROR_TEXT);
 });
 
 test("Incorrect input: null", () => {
-    expect(getWrittenNumber(null)).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+    expect(getWrittenNumber(null)).toBe(NOT_A_NUMBER_ERROR_TEXT);
 });
 
 test("Incorrect input: multiple minus signs", () => {
-    expect(getWrittenNumber("-0-0")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+    expect(getWrittenNumber("-0-0")).toBe(NOT_A_NUMBER_ERROR_TEXT);
 });
 
 test("Incorrect input: multiple decimal points", () => {
-    expect(getWrittenNumber("1.2.3")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+    expect(getWrittenNumber("1.2.3")).toBe(NOT_A_NUMBER_ERROR_TEXT);
 });
 
 test("Incorrect input: leading zero", () => {
-    expect(getWrittenNumber("00.0")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+    expect(getWrittenNumber("00.0")).toBe(NOT_A_NUMBER_ERROR_TEXT);
 });
 
 test("Incorrect input: only a minus sign", () => {
-    expect(getWrittenNumber("-")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+    expect(getWrittenNumber("-")).toBe(NOT_A_NUMBER_ERROR_TEXT);
 });
 
 test("Incorrect input: only minus signs", () => {
-    expect(getWrittenNumber("---")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+    expect(getWrittenNumber("---")).toBe(NOT_A_NUMBER_ERROR_TEXT);
 });
 
 test("Incorrect input: only a decimal point", () => {
-    expect(getWrittenNumber(".")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+    expect(getWrittenNumber(".")).toBe(NOT_A_NUMBER_ERROR_TEXT);
 });
 
 test("Incorrect input: only decimal points", () => {
-    expect(getWrittenNumber("...")).toBe("Your input was not a simple number. Please write one into the input field if you want a correct result.");
+    expect(getWrittenNumber("...")).toBe(NOT_A_NUMBER_ERROR_TEXT);
 });
 
 
@@ -137,6 +137,10 @@ test("Complete number: last \"and\" test with no middle \"and\"", () => {
 
 test("Complete number: last \"and\" test with middle \"and\"s", () => {
     expect(getWrittenNumber("1203405")).toBe("one million two hundred and three thousand four hundred and five");
+});
+
+test("Complete number: big number with only one digit", () => {
+    expect(getWrittenNumber("1000000000000")).toBe("one billion");
 });
 
 
