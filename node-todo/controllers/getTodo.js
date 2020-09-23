@@ -22,5 +22,5 @@ export const getTodo = async (req, res) => {
         };
     }
     res.status(statusCode);
-    res.send(responseContent);
+    res.json(responseContent);
 };

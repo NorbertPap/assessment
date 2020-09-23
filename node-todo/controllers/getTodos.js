@@ -4,7 +4,7 @@ export const getTodos = async (req, res) => {
     let responseContent;
     let statusCode;
     try{
-        responseContent = JSON.stringify(await getAllTodoItems());
+        responseContent = await getAllTodoItems();
         statusCode = 200;
     } catch (e) {
         // error can be: file system problem -> Internal Server Error
@@ -14,5 +14,5 @@ export const getTodos = async (req, res) => {
         statusCode = 500;
     }
     res.status(statusCode);
-    res.send(responseContent)
+    res.json(responseContent);
 };

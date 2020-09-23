@@ -5,12 +5,10 @@ import {updateTodo} from "../controllers/updateTodo.js";
 import {deleteTodo} from "../controllers/deleteTodo.js";
 
 export function registerRoutes(app) {
-    app.route("/todos")
-        .get(getTodos)
-        .post(newTodo);
+    app.get("/todos", getTodos);
+    app.post("/todos", newTodo);
 
-    app.route("/todos/:id")
-        .get(getTodo)
-        .put(updateTodo)
-        .delete(deleteTodo);
+    app.get("/todos/:id", getTodo);
+    app.put("/todos/:id", updateTodo);
+    app.delete("/todos/:id", deleteTodo);
 }
