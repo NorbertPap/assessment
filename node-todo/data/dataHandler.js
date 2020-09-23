@@ -1,5 +1,7 @@
 import fs from "fs/promises";
 import shortid from "shortid";
+import {ValidationError} from "../errors/ValidationError.js";
+import {ResourceNotFoundError} from "../errors/ResourceNotFoundError.js";
 
 const fileName = "./data/todos.json";
 
@@ -7,12 +9,15 @@ export async function getAllTodoItems() {
     return JSON.parse(await fs.readFile(fileName));
 }
 
+async function saveTodoItems(todosObject) {
+    fs.writeFile(fileName, JSON.stringify(todosObject));
+}
+
 export async function addNewTodoItem(todo) {
     let newItem = createNewTodoFromRequest(todo);
-
     let todosObject = await getAllTodoItems();
     todosObject.todos.push(newItem);
-    await fs.writeFile(fileName, JSON.stringify(todosObject));
+    await saveTodoItems(todosObject);
 }
 
 function createNewTodoFromRequest(todo) {
@@ -28,7 +33,7 @@ function createNewTodoFromRequest(todo) {
 function extractDataForNewTodo(todo) {
     let {text, priority, done} = todo;
     if (text === undefined) {
-        throw new Error("Text was not set for todo. Please specify text before posting new todo");
+        throw new ValidationError("Text was not set for todo. Please specify text before posting new todo");
     }
     if (priority === undefined) {
         priority = 3;
@@ -57,7 +62,7 @@ export async function deleteTodoById(id) {
         return todo !== todoItemToBeDeleted
     });
 
-    await fs.writeFile(fileName, JSON.stringify(todosObject));
+    await saveTodoItems(todosObject);
 }
 
 export async function updateTodoById(id, todo) {
@@ -76,7 +81,7 @@ export async function updateTodoById(id, todo) {
         todoItemToBeUpdated.done = done;
     }
 
-    await fs.writeFile(fileName, JSON.stringify(todosObject));
+    await saveTodoItems(todosObject);
     return todoItemToBeUpdated;
 }
 
@@ -91,8 +96,16 @@ function findTodoById(todos, id) {
     }
 
     if (!todoToFind) {
-        throw new Error(`Could not find todo with an id of: ${id}`)
+        throw new ResourceNotFoundError(`Could not find todo with an id of: ${id}`)
     }
 
     return todoToFind;
+}
+
+export async function cleanUpDoneTodos() {
+    let todosObject = await getAllTodoItems();
+    todosObject.todos = todosObject.todos.filter((todo) => {
+        return !todo.done;
+    });
+    await saveTodoItems(todosObject);
 }
