@@ -1,15 +1,16 @@
-import app from "../todoServer"
-import {getTodos} from "../controllers/getTodos";
-import {newTodo} from "../controllers/newTodo";
-import {getTodo} from "../controllers/getTodo";
-import {updateTodo} from "../controllers/updateTodo";
-import {deleteTodo} from "../controllers/deleteTodo";
+import {getTodos} from "../controllers/getTodos.js";
+import {newTodo} from "../controllers/newTodo.js";
+import {getTodo} from "../controllers/getTodo.js";
+import {updateTodo} from "../controllers/updateTodo.js";
+import {deleteTodo} from "../controllers/deleteTodo.js";
 
-app.route("/todos")
-    .get(getTodos)
-    .post(newTodo);
+export function registerRoutes(app) {
+    app.route("/todos")
+        .get(getTodos)
+        .post(newTodo);
 
-app.route("/todos/:id")
-    .get(getTodo)
-    .put(updateTodo)
-    .delete(deleteTodo);
+    app.route("/todos/:id")
+        .get(getTodo)
+        .put(updateTodo)
+        .delete(deleteTodo);
+}
