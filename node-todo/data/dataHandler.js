@@ -32,16 +32,25 @@ function createNewTodoFromRequest(todo) {
 
 function extractDataForNewTodo(todo) {
     let {text, priority, done} = todo;
+    validateExistingFieldTypes(text, priority, done);
     if (text === undefined) {
         throw new ValidationError("Text was not set for todo. Please specify text before posting new todo");
     }
-    if (priority === undefined) {
+    if (priority === undefined || priority < 1 || priority > 5 || typeof priority !== "number") {
         priority = 3;
     }
-    if (done === undefined) {
+    if (done === undefined || typeof done !== "boolean") {
         done = false;
     }
     return {text, priority, done};
+}
+
+function validateExistingFieldTypes(text, priority, done) {
+    if(text !== undefined && typeof text !== "string" ||
+        priority !== undefined &&typeof priority !== "number" ||
+        done !== undefined && typeof done !== "boolean") {
+        throw new ValidationError("Incorrect format for todo item.");
+    }
 }
 
 function generateNewId() {
@@ -70,14 +79,15 @@ export async function updateTodoById(id, todo) {
     let {todos} = todosObject;
     let todoItemToBeUpdated = findTodoById(todos, id);
     let {text, priority, done} = todo;
+    validateExistingFieldTypes(text, priority, done);
 
-    if(text !== undefined) {
+    if(text !== undefined && typeof text === "string") {
         todoItemToBeUpdated.text = text;
     }
-    if(priority !== undefined) {
+    if(priority !== undefined && typeof priority === "number") {
         todoItemToBeUpdated.priority = priority;
     }
-    if(done !== undefined) {
+    if(done !== undefined && typeof done === "boolean") {
         todoItemToBeUpdated.done = done;
     }
 

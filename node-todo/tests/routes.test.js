@@ -8,6 +8,7 @@ jest.mock("../data/dataHandler.js");
 
 // GET /todos
 test("Get the array of todos", async () => {
+    getAllTodoItems.mockResolvedValue({todos: []});
     const response = await request(app).get("/todos");
     expect(response.statusCode).toBe(200);
     expect(response.body.todos).toBeDefined();
@@ -29,7 +30,7 @@ test("Get todo by id: existing id", async () => {
     expect(response.body).toEqual({id:"mock", text: "Stay hard", priority: 5, done: false});
 });
 
-test("Get todo by id: non-existing id", async () => {
+test("Get todo by id: non-existent id", async () => {
     getTodoById.mockImplementation(() => {throw new ResourceNotFoundError(`Could not find todo with an id of: mock`)});
     const response = await request(app).get("/todos/mock");
     expect(response.statusCode).toBe(404);
@@ -53,6 +54,13 @@ test("Create new todo", async () => {
 
 test("Create new todo: validation error", async () => {
     addNewTodoItem.mockImplementation(() => {throw new ValidationError("Text was not set for todo. Please specify text before posting new todo")});
+    const response = await request(app).post("/todos");
+    expect(response.statusCode).toBe(400);
+    expect(addNewTodoItem.mock.calls.length).toBe(1);
+});
+
+test("Create new todo: validation error 2", async () => {
+    addNewTodoItem.mockImplementation(() => {throw new ValidationError("Incorrect format for todo item.")});
     const response = await request(app).post("/todos");
     expect(response.statusCode).toBe(400);
     expect(addNewTodoItem.mock.calls.length).toBe(1);
@@ -94,7 +102,7 @@ test("Delete todo: correct id", async () => {
     deleteTodoById.mockResolvedValue(undefined);
     const response = await request(app).delete("/todos/mock");
     expect(response.statusCode).toBe(200);
-    expect(addNewTodoItem.mock.calls.length).toBe(1);
+    expect(deleteTodoById.mock.calls.length).toBe(1);
 });
 
 test("Delete todo: incorrect id", async () => {
