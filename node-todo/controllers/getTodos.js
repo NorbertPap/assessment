@@ -1,16 +1,16 @@
 import {getAllTodoItems} from "../data/dataHandler.js";
 
 export const getTodos = async (req, res) => {
-    let statusCode;
     let responseContent;
+    let statusCode;
     try{
-        statusCode = 200;
         responseContent = JSON.stringify(await getAllTodoItems());
+        statusCode = 200;
     } catch (e) {
-        statusCode = 500;
         responseContent = {
             errorMessage: e.message
         };
+        statusCode = 500;
     }
     res.status(statusCode);
     res.send(responseContent)
